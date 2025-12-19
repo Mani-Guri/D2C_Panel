@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D2C Admin Panel | Master Control</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --utility: #06d6a0;
+            --ecommerce: #ff9e00;
+            --danger: #ef476f;
+            --warning: #ffd166;
+            --success: #06d6a0;
+            --dark: #2b2d42;
+            --light: #f8f9fa;
+            --gray: #adb5bd;
+            --gray-light: #e9ecef;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .logo {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo h1 {
+            font-size: 22px;
+            background: linear-gradient(90deg, var(--primary), var(--utility));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        .nav-section {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .nav-section h3 {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+            padding: 0 20px 12px;
+            font-weight: 600;
+        }
+
+        .nav-links {
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-bottom: 2px;
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            gap: 14px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+            color: var(--primary);
+        }
+
+        .nav-links a.active {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            border-left: 4px solid var(--primary);
+        }
+
+        .nav-links a.active:after {
+            content: '';
+            position: absolute;
+            right: 20px;
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .nav-links a i {
+            width: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .dashboard-switcher {
+            margin: 20px;
+            background: var(--light);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .dashboard-option {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 4px solid transparent;
+        }
+
+        .dashboard-option:hover {
+            background: white;
+        }
+
+        .dashboard-option.active {
+            background: white;
+            border-left-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .dashboard-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .utility-icon {
+            background: var(--utility);
+        }
+
+        .ecommerce-icon {
+            background: var(--ecommerce);
+        }
+
+        .master-icon {
+            background: var(--primary);
+        }
+
+        .dashboard-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .dashboard-info p {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .topbar {
+            background: white;
+            padding: 18px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 50;
+        }
+
+        .page-title h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .page-title p {
+            color: var(--gray);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notifications {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger);
+            color: white;
+            font-size: 11px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--utility));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .user-info h4 {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .user-info p {
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        /* Dashboard Content */
+        .dashboard-content {
+            padding: 30px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: white;
+        }
+
+        .stat-info h3 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .stat-info p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* Tables */
+        .table-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .table-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: var(--light);
+        }
+
+        th {
+            padding: 16px 24px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--gray-light);
+            transition: var(--transition);
+        }
+
+        tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.03);
+        }
+
+        td {
+            padding: 18px 24px;
+            font-size: 14px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: rgba(6, 214, 160, 0.15);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(255, 209, 102, 0.15);
+            color: #e6a500;
+        }
+
+        .status-failed {
+            background: rgba(239, 71, 111, 0.15);
+            color: var(--danger);
+        }
+
+        .status-processing {
+            background: rgba(67, 97, 238, 0.15);
+            color: var(--primary);
+        }
+
+        /* Two Column Layout */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Wallet Flow Visualization */
+        .wallet-flow {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .flow-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .flow-steps:before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 50px;
+            right: 50px;
+            height: 3px;
+            background: var(--gray-light);
+            z-index: 1;
+        }
+
+        .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            width: 120px;
+        }
+
+        .step-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: var(--primary);
+            margin-bottom: 12px;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.2);
+        }
+
+        .step-text {
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .step-arrow {
+            font-size: 24px;
+            color: var(--gray);
+            position: absolute;
+            top: 25px;
+            right: -15px;
+        }
+
+        /* Service Cards */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            cursor: pointer;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .service-card.active {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.03);
+        }
+
+        .service-card.active:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 30px 30px 0;
+            border-color: transparent var(--primary) transparent transparent;
+        }
+
+        .service-card.active:after {
+            content: '✓';
+            position: absolute;
+            top: 3px;
+            right: 5px;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .service-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 22px;
+            color: white;
+        }
+
+        /* Service Modal */
+        .service-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .service-modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--danger);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* Utility colors */
+        .mobile-bg { background: #4361ee; }
+        .dth-bg { background: #06d6a0; }
+        .biller-bg { background: #7209b7; }
+        .bus-bg { background: #f72585; }
+        .air-bg { background: #4cc9f0; }
+        .electricity-bg { background: #ff9e00; }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gray);
+            color: var(--dark);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Hide inactive dashboards */
+        .dashboard-panel {
+            display: none;
+        }
+
+        .dashboard-panel.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+            }
+            .logo h1, .nav-section h3, .dashboard-info, .user-info {
+                display: none;
+            }
+            .logo {
+                justify-content: center;
+                padding: 20px 0;
+            }
+            .nav-links a {
+                justify-content: center;
+                padding: 18px 0;
+            }
+            .nav-links a span {
+                display: none;
+            }
+            .dashboard-switcher {
+                margin: 10px;
+            }
+            .dashboard-option {
+                justify-content: center;
+                padding: 15px 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            .table-container {
+                overflow-x: auto;
+            }
+            table {
+                min-width: 700px;
+            }
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <div class="logo-icon"><i class="fas fa-chart-network"></i></div>
+                <h1>D2C Admin</h1>
+            </div>
+            
+            <!-- Dashboard Switcher -->
+            <div class="dashboard-switcher">
+                <div class="dashboard-option active" data-dashboard="utility">
+                    <div class="dashboard-icon utility-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="dashboard-info">
+                        <h4>Utility Dashboard</h4>
+                        <p>Mobile, DTH, BBPS</p>
+                    </div>
+                </div>
+                <div class="dashboard-option" data-dashboard="ecommerce">
+                    <div class="dashboard-icon ecommerce-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="dashboard-info">
+                        <h4>E-commerce Dashboard</h4>
+                        <p>Products, Orders</p>
+                    </div>
+                </div>
+                <div class="dashboard-option" data-dashboard="master">
+                    <div class="dashboard-icon master-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div class="dashboard-info">
+                        <h4>Master Control</h4>
+                        <p>Super Admin</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <div class="nav-section">
+                <h3>Main</h3>
+                <ul class="nav-links">
+                    <li><a href="#" class="active" data-nav="dashboard"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+                    <li><a href="#" data-nav="wallet"><i class="fas fa-wallet"></i><span>Wallet</span></a></li>
+                    <li><a href="#" data-nav="transactions"><i class="fas fa-exchange-alt"></i><span>Transactions</span></a></li>
+                    <li><a href="#" data-nav="customers"><i class="fas fa-users"></i><span>Customers</span></a></li>
+                    <li><a href="#" data-nav="analytics"><i class="fas fa-chart-bar"></i><span>Analytics</span></a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <h3>Management</h3>
+                <ul class="nav-links">
+                    <li><a href="#" data-nav="settings"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+                    <li><a href="#" data-nav="support"><i class="fas fa-headset"></i><span>Support</span></a></li>
+                    <li><a href="#" data-nav="reports"><i class="fas fa-file-invoice-dollar"></i><span>Reports</span></a></li>
+                    <li><a href="#" data-nav="security"><i class="fas fa-shield-alt"></i><span>Security</span></a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Topbar -->
+            <div class="topbar">
+                <div class="page-title">
+                    <h2 id="dashboard-title">Utility Services Dashboard</h2>
+                    <p id="dashboard-subtitle">Manage Mobile, DTH, BBPS, BUS & Air transactions</p>
+                </div>
+                
+                <div class="user-menu">
+                    <div class="notifications">
+                        <i class="fas fa-bell" style="font-size: 20px; color: var(--dark);"></i>
+                        <span class="notification-badge">7</span>
+                    </div>
+                    
+                    <div class="user-profile">
+                        <div class="avatar">SA</div>
+                        <div class="user-info">
+                            <h4>Super Admin</h4>
+                            <p>Administrator</p>
+                        </div>
+                        <i class="fas fa-chevron-down" style="color: var(--gray);"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                
+                <!-- UTILITY DASHBOARD -->
+                <div class="dashboard-panel active" id="utility-dashboard">
+                    <!-- Stats -->
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--utility);">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>1,247</h3>
+                                <p>Today's Transactions</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--primary);">
+                                <i class="fas fa-rupee-sign"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>₹2,84,567</h3>
+                                <p>Transaction Volume</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--success);">
+                                <i class="fas fa-percentage"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>₹8,492</h3>
+                                <p>Platform Fees</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--warning);">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>42</h3>
+                                <p>Pending KYC</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Two Column Layout -->
+                    <div class="two-column">
+                        <!-- Live Transactions -->
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h3><i class="fas fa-bolt" style="color: var(--utility); margin-right: 10px;"></i>Live Transactions</h3>
+                                <button class="btn btn-outline">View All</button>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Transaction ID</th>
+                                        <th>Service</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>TXN_789001</td>
+                                        <td>Airtel Mobile</td>
+                                        <td>₹399</td>
+                                        <td><span class="status status-success">Success</span></td>
+                                        <td>09:42 AM</td>
+                                    </tr>
+                                    <tr>
+                                        <td>TXN_789002</td>
+                                        <td>Electricity Bill</td>
+                                        <td>₹1,250</td>
+                                        <td><span class="status status-pending">Pending</span></td>
+                                        <td>09:40 AM</td>
+                                    </tr>
+                                    <tr>
+                                        <td>TXN_789003</td>
+                                        <td>Jio Recharge</td>
+                                        <td>₹299</td>
+                                        <td><span class="status status-failed">Failed</span></td>
+                                        <td>09:38 AM</td>
+                                    </tr>
+                                    <tr>
+                                        <td>TXN_789004</td>
+                                        <td>Gas Bill</td>
+                                        <td>₹650</td>
+                                        <td><span class="status status-success">Success</span></td>
+                                        <td>09:35 AM</td>
+                                    </tr>
+                                    <tr>
+                                        <td>TXN_789005</td>
+                                        <td>DISH TV DTH</td>
+                                        <td>₹500</td>
+                                        <td><span class="status status-processing">Processing</span></td>
+                                        <td>09:30 AM</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Service Management -->
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h3><i class="fas fa-cog" style="color: var(--primary); margin-right: 10px;"></i>Service Management</h3>
+                                <button class="btn btn-primary">+ Add Service</button>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Provider</th>
+                                        <th>Status</th>
+                                        <th>Fee %</th>
+                                        <th>Last Updated</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><i class="fas fa-mobile-alt" style="color: var(--primary); margin-right: 8px;"></i>Airtel</td>
+                                        <td><span class="status status-success">Active</span></td>
+                                        <td>1.2%</td>
+                                        <td>2 min ago</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-wifi" style="color: var(--success); margin-right: 8px;"></i>Jio</td>
+                                        <td><span class="status status-success">Active</span></td>
+                                        <td>1.5%</td>
+                                        <td>5 min ago</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-satellite-dish" style="color: var(--warning); margin-right: 8px;"></i>DISH TV</td>
+                                        <td><span class="status status-success">Active</span></td>
+                                        <td>₹15 flat</td>
+                                        <td>10 min ago</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-bolt" style="color: var(--danger); margin-right: 8px;"></i>BSNL</td>
+                                        <td><span class="status status-failed">Inactive</span></td>
+                                        <td>1.0%</td>
+                                        <td>1 day ago</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Services Grid -->
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3><i class="fas fa-th-large" style="color: var(--utility); margin-right: 10px;"></i>Utility Services</h3>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn btn-outline">Manage Categories</button>
+                                <button class="btn btn-outline" id="recharge-demo-btn">
+                                    <i class="fas fa-play-circle"></i> Demo Recharge
+                                </button>
+                            </div>
+                        </div>
+                        <div class="services-grid" style="padding: 20px;">
+                            <div class="service-card" data-service="mobile">
+                                <div class="service-icon mobile-bg">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                                <h4>Mobile Recharge</h4>
+                                <p style="font-size: 12px; color: var(--gray); margin-top: 5px;">65% of transactions</p>
+                            </div>
+                            <div class="service-card" data-service="dth">
+                                <div class="service-icon dth-bg">
+                                    <i class="fas fa-satellite-dish"></i>
+                                </div>
+                                <h4>DTH Recharge</h4>
+                                <p style="font-size: 12px; color: var(--gray); margin-top: 5px;">18% of transactions</p>
+                            </div>
+                            <div class="service-card" data-service="bbps">
+                                <div class="service-icon biller-bg">
+                                    <i class="fas fa-file-invoice-dollar"></i>
+                                </div>
+                                <h4>BBPS Bill Pay</h4>
+                                <p style="font-size: 12px; color: var(--gray); margin-top: 5px;">12% of transactions</p>
+                            </div>
+                            <div class="service-card" data-service="bus">
+                                <div class="service-icon bus-bg">
+                                    <i class="fas fa-bus"></i>
+                                </div>
+                                <h4>BUS Tickets</h4>
+                                <p style="font-size: 12px; color: var(--gray); margin-top: 5px;">3% of transactions</p>
+                            </div>
+                            <div class="service-card" data-service="air">
+                                <div class="service-icon air-bg">
+                                    <i class="fas fa-plane"></i>
+                                </div>
+                                <h4>Air Tickets</h4>
+                                <p style="font-size: 12px; color: var(--gray); margin-top: 5px;">2% of transactions</p>
+                            </div>
+                            <div class="service-card" data-service="electricity">
+                                <div class="service-icon electricity-bg">
+                                    <i class="fas fa-bolt"></i>
+                                </div>
+                                <h4>Electricity</h4>
+                                <p style="font-size: 12px; color: var(--gray); margin-top: 5px;">8% of transactions</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- E-COMMERCE DASHBOARD -->
+                <div class="dashboard-panel" id="ecommerce-dashboard">
+                    <!-- Stats -->
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--ecommerce);">
+                                <i class="fas fa-shopping-bag"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>142</h3>
+                                <p>Today's Orders</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--primary);">
+                                <i class="fas fa-rupee-sign"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>₹1,84,250</h3>
+                                <p>Revenue</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--success);">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>₹1,297</h3>
+                                <p>Avg. Cart Value</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--danger);">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>8</h3>
+                                <p>Return Requests</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Two Column Layout -->
+                    <div class="two-column">
+                        <!-- Recent Orders -->
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h3><i class="fas fa-clipboard-list" style="color: var(--ecommerce); margin-right: 10px;"></i>Recent Orders</h3>
+                                <button class="btn btn-outline">View All</button>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Payment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>EC_1001</td>
+                                        <td>R. Sharma</td>
+                                        <td>₹2,499</td>
+                                        <td><span class="status status-processing">Processing</span></td>
+                                        <td>Wallet</td>
+                                    </tr>
+                                    <tr>
+                                        <td>EC_1002</td>
+                                        <td>P. Patel</td>
+                                        <td>₹899</td>
+                                        <td><span class="status status-success">Shipped</span></td>
+                                        <td>Card</td>
+                                    </tr>
+                                    <tr>
+                                        <td>EC_1003</td>
+                                        <td>S. Kumar</td>
+                                        <td>₹1,550</td>
+                                        <td><span class="status status-success">Delivered</span></td>
+                                        <td>UPI</td>
+                                    </tr>
+                                    <tr>
+                                        <td>EC_1004</td>
+                                        <td>A. Singh</td>
+                                        <td>₹3,250</td>
+                                        <td><span class="status status-pending">Pending</span></td>
+                                        <td>Wallet</td>
+                                    </tr>
+                                    <tr>
+                                        <td>EC_1005</td>
+                                        <td>M. Verma</td>
+                                        <td>₹4,999</td>
+                                        <td><span class="status status-failed">Cancelled</span></td>
+                                        <td>Card</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Product Catalog -->
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h3><i class="fas fa-box-open" style="color: var(--primary); margin-right: 10px;"></i>Product Catalog</h3>
+                                <button class="btn btn-primary">+ Add Product</button>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Category</th>
+                                        <th>Stock</th>
+                                        <th>Price</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><i class="fas fa-mobile-alt" style="color: var(--primary); margin-right: 8px;"></i>Smartphone X</td>
+                                        <td>Electronics</td>
+                                        <td>42</td>
+                                        <td>₹18,999</td>
+                                        <td><span class="status status-success">In Stock</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-tshirt" style="color: var(--success); margin-right: 8px;"></i>Premium T-Shirt</td>
+                                        <td>Fashion</td>
+                                        <td style="color: var(--danger); font-weight: 600;">4</td>
+                                        <td>₹499</td>
+                                        <td><span class="status status-failed">Low Stock</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-headphones" style="color: var(--warning); margin-right: 8px;"></i>Wireless Headphones</td>
+                                        <td>Electronics</td>
+                                        <td>12</td>
+                                        <td>₹2,499</td>
+                                        <td><span class="status status-success">In Stock</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-laptop" style="color: var(--primary); margin-right: 8px;"></i>Gaming Laptop</td>
+                                        <td>Electronics</td>
+                                        <td>7</td>
+                                        <td>₹89,999</td>
+                                        <td><span class="status status-success">In Stock</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Wallet Flow Visualization -->
+                    <div class="wallet-flow">
+                        <div class="table-header" style="border: none; padding: 0 0 20px 0;">
+                            <h3><i class="fas fa-money-check-alt" style="color: var(--success); margin-right: 10px;"></i>Payment & Wallet Flow</h3>
+                            <button class="btn btn-outline">View Ledger</button>
+                        </div>
+                        
+                        <div class="flow-steps">
+                            <div class="flow-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                                <div class="step-text">Customer Places Order</div>
+                            </div>
+                            
+                            <i class="fas fa-arrow-right step-arrow"></i>
+                            
+                            <div class="flow-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-credit-card"></i>
+                                </div>
+                                <div class="step-text">PG Payment</div>
+                            </div>
+                            
+                            <i class="fas fa-arrow-right step-arrow"></i>
+                            
+                            <div class="flow-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                                <div class="step-text">Admin Merchant Account</div>
+                            </div>
+                            
+                            <i class="fas fa-arrow-right step-arrow"></i>
+                            
+                            <div class="flow-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-wallet"></i>
+                                </div>
+                                <div class="step-text">Wallet Credit</div>
+                            </div>
+                            
+                            <i class="fas fa-arrow-right step-arrow"></i>
+                            
+                            <div class="flow-step">
+                                <div class="step-icon">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <div class="step-text">Order Fulfillment</div>
+                            </div>
+                        </div>
+                        
+                        <div style="background: var(--light); padding: 20px; border-radius: 10px; margin-top: 20px;">
+                            <h4 style="margin-bottom: 10px;">Example: ₹500 Mobile Recharge</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 14px;">
+                                <div>
+                                    <p><strong>1. PG Payment Received:</strong> <span style="color: var(--success);">+₹500.00</span></p>
+                                    <p><strong>2. Wallet Credit:</strong> <span style="color: var(--success);">+₹500.00</span></p>
+                                </div>
+                                <div>
+                                    <p><strong>3. Service Fee (2%):</strong> <span style="color: var(--danger);">-₹10.00</span></p>
+                                    <p><strong>4. Recharge Deduction:</strong> <span style="color: var(--danger);">-₹490.00</span></p>
+                                </div>
+                            </div>
+                            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--gray-light);">
+                                <p><strong>Admin Revenue:</strong> ₹10 (Platform Fee)</p>
+                                <p><strong>Provider Gets:</strong> ₹490</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- MASTER CONTROL DASHBOARD -->
+                <div class="dashboard-panel" id="master-dashboard">
+                    <!-- Stats -->
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--primary);">
+                                <i class="fas fa-chart-network"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>₹42.7L</h3>
+                                <p>Total Platform Revenue</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--utility);">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>21,299</h3>
+                                <p>Utility Users</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--ecommerce);">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>8,452</h3>
+                                <p>E-commerce Users</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--success);">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>100%</h3>
+                                <p>System Health</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Two Column Layout -->
+                    <div class="two-column">
+                        <!-- Platform Financials -->
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h3><i class="fas fa-chart-pie" style="color: var(--primary); margin-right: 10px;"></i>Platform Financials</h3>
+                                <button class="btn btn-outline">Export Report</button>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Service</th>
+                                        <th>Today</th>
+                                        <th>This Month</th>
+                                        <th>Growth</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><i class="fas fa-bolt" style="color: var(--utility); margin-right: 8px;"></i>Utility</td>
+                                        <td>₹8,492</td>
+                                        <td>₹1,84,750</td>
+                                        <td><span style="color: var(--success);">+12.5%</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-shopping-cart" style="color: var(--ecommerce); margin-right: 8px;"></i>E-commerce</td>
+                                        <td>₹5,275</td>
+                                        <td>₹1,22,890</td>
+                                        <td><span style="color: var(--success);">+8.3%</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-percentage" style="color: var(--success); margin-right: 8px;"></i>Platform Fees</td>
+                                        <td>₹13,767</td>
+                                        <td>₹3,07,640</td>
+                                        <td><span style="color: var(--success);">+10.2%</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-wallet" style="color: var(--warning); margin-right: 8px;"></i>Wallet Deposits</td>
+                                        <td>₹2,45,000</td>
+                                        <td>₹52,10,000</td>
+                                        <td><span style="color: var(--success);">+15.7%</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- User & Role Management -->
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h3><i class="fas fa-users-cog" style="color: var(--dark); margin-right: 10px;"></i>User & Role Management</h3>
+                                <button class="btn btn-primary">+ Add User</button>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Role</th>
+                                        <th>Dashboard Access</th>
+                                        <th>Last Login</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>admin_utility</td>
+                                        <td><span class="status status-success">Manager</span></td>
+                                        <td>Utility Only</td>
+                                        <td>2 hours ago</td>
+                                        <td>
+                                            <button class="btn btn-outline" style="padding: 5px 10px; font-size: 12px;">Edit</button>
+                                            <button class="btn btn-outline" style="padding: 5px 10px; font-size: 12px; margin-left: 5px;">Disable</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>admin_support</td>
+                                        <td><span class="status status-processing">Support</span></td>
+                                        <td>Both (Read Only)</td>
+                                        <td>30 min ago</td>
+                                        <td>
+                                            <button class="btn btn-outline" style="padding: 5px 10px; font-size: 12px;">Edit</button>
+                                            <button class="btn btn-outline" style="padding: 5px 10px; font-size: 12px; margin-left: 5px;">Disable</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>admin_finance</td>
+                                        <td><span class="status" style="background: rgba(155, 89, 182, 0.15); color: #9b59b6;">Finance</span></td>
+                                        <td>Both (Financials)</td>
+                                        <td>1 day ago</td>
+                                        <td>
+                                            <button class="btn btn-outline" style="padding: 5px 10px; font-size: 12px;">Edit</button>
+                                            <button class="btn btn-outline" style="padding: 5px 10px; font-size: 12px; margin-left: 5px;">Disable</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>admin_ecom</td>
+                                        <td><span class="status" style="background: rgba(255, 158, 0, 0.15); color: var(--ecommerce);">E-com Manager</span></td>
+                                        <td>E-commerce Only</td>
+                                        <td>5 hours ago</td>
+                                        <td>
+                                            <button class="btn btn-outline" style="padding: 5px 10px; font-size: 12px;">Edit</button>
+                                            <button class="btn btn-outline" style="padding: 5px 10px; font-size: 12px; margin-left: 5px;">Disable</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- System Configuration -->
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3><i class="fas fa-sliders-h" style="color: var(--primary); margin-right: 10px;"></i>System Configuration</h3>
+                            <button class="btn btn-outline">Save Changes</button>
+                        </div>
+                        <div style="padding: 24px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px;">
+                                <div>
+                                    <h4 style="margin-bottom: 15px; font-size: 16px;">Platform Fees</h4>
+                                    <div style="background: var(--light); padding: 15px; border-radius: 8px;">
+                                        <p><strong>Utility Services:</strong> 1.5% - 2.5%</p>
+                                        <p><strong>E-commerce:</strong> 3.0% - 5.0%</p>
+                                        <p><strong>Minimum Fee:</strong> ₹1</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 style="margin-bottom: 15px; font-size: 16px;">Wallet Settings</h4>
+                                    <div style="background: var(--light); padding: 15px; border-radius: 8px;">
+                                        <p><strong>Min. Wallet Balance:</strong> ₹100</p>
+                                        <p><strong>KYC Required Above:</strong> ₹10,000</p>
+                                        <p><strong>Max. Daily Load:</strong> ₹50,000</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 style="margin-bottom: 15px; font-size: 16px;">API Status</h4>
+                                    <div style="background: var(--light); padding: 15px; border-radius: 8px;">
+                                        <p><i class="fas fa-circle" style="color: var(--success); font-size: 10px; margin-right: 8px;"></i>Payment Gateway: Operational</p>
+                                        <p><i class="fas fa-circle" style="color: var(--success); font-size: 10px; margin-right: 8px;"></i>BBPS Integration: Operational</p>
+                                        <p><i class="fas fa-circle" style="color: var(--warning); font-size: 10px; margin-right: 8px;"></i>SMS Gateway: Slow</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Selection Modal -->
+    <div class="service-modal" id="serviceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalServiceTitle">
+                    <i class="fas fa-mobile-alt" id="modalServiceIcon"></i>
+                    <span id="modalServiceName">Mobile Recharge</span>
+                </h3>
+                <button class="modal-close" id="modalCloseBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="serviceProvider">Service Provider</label>
+                    <select id="serviceProvider">
+                        <option value="">Select Provider</option>
+                        <option value="airtel">Airtel</option>
+                        <option value="jio">Jio</option>
+                        <option value="vi">Vi (Vodafone Idea)</option>
+                        <option value="bsnl">BSNL</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="mobileNumber">Mobile Number</label>
+                    <input type="text" id="mobileNumber" placeholder="Enter 10-digit mobile number">
+                </div>
+                <div class="form-group">
+                    <label for="rechargeAmount">Recharge Amount (₹)</label>
+                    <input type="number" id="rechargeAmount" placeholder="Enter amount" min="10" max="5000">
+                </div>
+                <div class="form-group">
+                    <label for="rechargePlan">Select Plan (Optional)</label>
+                    <select id="rechargePlan">
+                        <option value="">Choose a plan</option>
+                        <option value="299">₹299 - 1.5GB/day, 28 days</option>
+                        <option value="399">₹399 - 2GB/day, 56 days</option>
+                        <option value="599">₹599 - 3GB/day, 84 days</option>
+                        <option value="799">₹799 - Unlimited, 90 days</option>
+                    </select>
+                </div>
+                <div id="transactionFlow" style="display: none; margin-top: 20px; padding: 15px; background: var(--light); border-radius: 8px;">
+                    <h4 style="margin-bottom: 10px; color: var(--primary);">Transaction Flow</h4>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="text-align: center;">
+                            <div style="width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 5px;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <small>Customer</small>
+                        </div>
+                        <i class="fas fa-arrow-right" style="color: var(--gray);"></i>
+                        <div style="text-align: center;">
+                            <div style="width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 5px;">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <small>PG Payment</small>
+                        </div>
+                        <i class="fas fa-arrow-right" style="color: var(--gray);"></i>
+                        <div style="text-align: center;">
+                            <div style="width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 5px;">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <small>Admin Account</small>
+                        </div>
+                        <i class="fas fa-arrow-right" style="color: var(--gray);"></i>
+                        <div style="text-align: center;">
+                            <div style="width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 5px;">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <small>Wallet Credit</small>
+                        </div>
+                    </div>
+                    <div style="font-size: 13px; color: var(--success); text-align: center; padding: 10px; background: white; border-radius: 5px; margin-top: 10px;">
+                        <i class="fas fa-check-circle"></i> ₹<span id="flowAmount">0</span> will be credited to customer wallet
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="modalCancelBtn">Cancel</button>
+                <button class="btn btn-primary" id="modalProceedBtn">Proceed to Payment</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Dashboard Switching Logic
+            const dashboardOptions = document.querySelectorAll('.dashboard-option');
+            const dashboardPanels = document.querySelectorAll('.dashboard-panel');
+            const dashboardTitle = document.getElementById('dashboard-title');
+            const dashboardSubtitle = document.getElementById('dashboard-subtitle');
+            
+            // Sidebar Navigation
+            const navLinks = document.querySelectorAll('.nav-links a');
+            
+            // Service Cards
+            const serviceCards = document.querySelectorAll('.service-card');
+            
+            // Modal Elements
+            const serviceModal = document.getElementById('serviceModal');
+            const modalCloseBtn = document.getElementById('modalCloseBtn');
+            const modalCancelBtn = document.getElementById('modalCancelBtn');
+            const modalProceedBtn = document.getElementById('modalProceedBtn');
+            const rechargeAmountInput = document.getElementById('rechargeAmount');
+            const rechargePlanSelect = document.getElementById('rechargePlan');
+            const transactionFlow = document.getElementById('transactionFlow');
+            const flowAmount = document.getElementById('flowAmount');
+            
+            // Dashboard titles and subtitles
+            const dashboardData = {
+                'utility': {
+                    title: 'Utility Services Dashboard',
+                    subtitle: 'Manage Mobile, DTH, BBPS, BUS & Air transactions'
+                },
+                'ecommerce': {
+                    title: 'E-commerce Dashboard',
+                    subtitle: 'Manage Products, Orders, Inventory & Shipping'
+                },
+                'master': {
+                    title: 'Master Control Panel',
+                    subtitle: 'Super Admin - Platform-wide configuration & oversight'
+                }
+            };
+            
+            // Service data for modal
+            const serviceData = {
+                'mobile': {
+                    name: 'Mobile Recharge',
+                    icon: 'fa-mobile-alt',
+                    color: '#4361ee'
+                },
+                'dth': {
+                    name: 'DTH Recharge',
+                    icon: 'fa-satellite-dish',
+                    color: '#06d6a0'
+                },
+                'bbps': {
+                    name: 'BBPS Bill Pay',
+                    icon: 'fa-file-invoice-dollar',
+                    color: '#7209b7'
+                },
+                'bus': {
+                    name: 'BUS Tickets',
+                    icon: 'fa-bus',
+                    color: '#f72585'
+                },
+                'air': {
+                    name: 'Air Tickets',
+                    icon: 'fa-plane',
+                    color: '#4cc9f0'
+                },
+                'electricity': {
+                    name: 'Electricity Bill',
+                    icon: 'fa-bolt',
+                    color: '#ff9e00'
+                }
+            };
+            
+            // Initialize sidebar navigation
+            function initNavigation() {
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        // Remove active class from all links
+                        navLinks.forEach(l => l.classList.remove('active'));
+                        
+                        // Add active class to clicked link
+                        this.classList.add('active');
+                        
+                        const navType = this.getAttribute('data-nav');
+                        
+                        // Show appropriate content based on navigation
+                        showNavContent(navType);
+                    });
+                });
+            }
+            
+            // Show content based on navigation selection
+            function showNavContent(navType) {
+                // For demo purposes, just update the page title
+                const titles = {
+                    'dashboard': 'Dashboard Overview',
+                    'wallet': 'Wallet Management',
+                    'transactions': 'Transaction History',
+                    'customers': 'Customer Management',
+                    'analytics': 'Analytics & Reports',
+                    'settings': 'System Settings',
+                    'support': 'Support Tickets',
+                    'reports': 'Financial Reports',
+                    'security': 'Security Settings'
+                };
+                
+                const subtitles = {
+                    'dashboard': 'Platform overview and quick actions',
+                    'wallet': 'Manage customer wallets and balances',
+                    'transactions': 'View and filter all transactions',
+                    'customers': 'Manage customer accounts and KYC',
+                    'analytics': 'Business intelligence and insights',
+                    'settings': 'Configure platform settings',
+                    'support': 'Handle customer support tickets',
+                    'reports': 'Generate and export financial reports',
+                    'security': 'Security and access control settings'
+                };
+                
+                if (titles[navType]) {
+                    dashboardTitle.textContent = titles[navType];
+                    dashboardSubtitle.textContent = subtitles[navType];
+                }
+            }
+            
+            // Initialize dashboard switching
+            dashboardOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const dashboardType = this.getAttribute('data-dashboard');
+                    
+                    // Remove active class from all options and panels
+                    dashboardOptions.forEach(opt => opt.classList.remove('active'));
+                    dashboardPanels.forEach(panel => panel.classList.remove('active'));
+                    
+                    // Add active class to clicked option
+                    this.classList.add('active');
+                    
+                    // Show corresponding panel
+                    document.getElementById(`${dashboardType}-dashboard`).classList.add('active');
+                    
+                    // Update page title and subtitle
+                    dashboardTitle.textContent = dashboardData[dashboardType].title;
+                    dashboardSubtitle.textContent = dashboardData[dashboardType].subtitle;
+                    
+                    // Reset service card selection
+                    serviceCards.forEach(card => card.classList.remove('active'));
+                });
+            });
+            
+            // Make service cards clickable
+            serviceCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const serviceType = this.getAttribute('data-service');
+                    
+                    // Remove active class from all service cards
+                    serviceCards.forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked card
+                    this.classList.add('active');
+                    
+                    // Open service modal
+                    openServiceModal(serviceType);
+                });
+            });
+            
+            // Open service modal
+            function openServiceModal(serviceType) {
+                const service = serviceData[serviceType];
+                if (!service) return;
+                
+                // Update modal content
+                document.getElementById('modalServiceName').textContent = service.name;
+                document.getElementById('modalServiceIcon').className = `fas ${service.icon}`;
+                document.getElementById('modalServiceIcon').style.color = service.color;
+                
+                // Reset form
+                document.getElementById('serviceProvider').value = '';
+                document.getElementById('mobileNumber').value = '';
+                document.getElementById('rechargeAmount').value = '';
+                document.getElementById('rechargePlan').value = '';
+                transactionFlow.style.display = 'none';
+                
+                // Show modal
+                serviceModal.classList.add('active');
+            }
+            
+            // Close modal
+            function closeModal() {
+                serviceModal.classList.remove('active');
+                // Reset service card selection
+                serviceCards.forEach(card => card.classList.remove('active'));
+            }
+            
+            // Event listeners for modal
+            modalCloseBtn.addEventListener('click', closeModal);
+            modalCancelBtn.addEventListener('click', closeModal);
+            
+            // Close modal when clicking outside
+            serviceModal.addEventListener('click', function(e) {
+                if (e.target === serviceModal) {
+                    closeModal();
+                }
+            });
+            
+            // Proceed to payment button
+            modalProceedBtn.addEventListener('click', function() {
+                const amount = rechargeAmountInput.value || document.getElementById('rechargePlan').value;
+                
+                if (!amount || amount < 10) {
+                    alert('Please enter a valid amount (minimum ₹10)');
+                    return;
+                }
+                
+                // For demo: Show success message
+                alert(`Payment of ₹${amount} initiated!\n\nFlow: Customer → PG → Admin Account → Wallet Credit → Service Delivery`);
+                
+                // Simulate adding transaction to table
+                simulateTransaction(amount);
+                
+                // Close modal
+                closeModal();
+            });
+            
+            // Show transaction flow when amount is entered
+            rechargeAmountInput.addEventListener('input', function() {
+                if (this.value) {
+                    transactionFlow.style.display = 'block';
+                    flowAmount.textContent = this.value;
+                } else {
+                    transactionFlow.style.display = 'none';
+                }
+            });
+            
+            rechargePlanSelect.addEventListener('change', function() {
+                if (this.value) {
+                    rechargeAmountInput.value = this.value;
+                    transactionFlow.style.display = 'block';
+                    flowAmount.textContent = this.value;
+                } else {
+                    rechargeAmountInput.value = '';
+                    transactionFlow.style.display = 'none';
+                }
+            });
+            
+            // Simulate adding a transaction to the table
+            function simulateTransaction(amount) {
+                // This would typically be done via AJAX in a real app
+                // For demo, we'll just show an alert
+                const serviceName = document.getElementById('modalServiceName').textContent;
+                alert(`✅ ${serviceName} of ₹${amount} added to transaction queue!\n\nCheck the "Live Transactions" table to see it appear.`);
+            }
+            
+            // Demo recharge button
+            document.getElementById('recharge-demo-btn').addEventListener('click', function() {
+                // Auto-select mobile recharge
+                serviceCards.forEach(card => card.classList.remove('active'));
+                document.querySelector('.service-card[data-service="mobile"]').classList.add('active');
+                
+                // Open modal with pre-filled demo data
+                openServiceModal('mobile');
+                
+                // Pre-fill demo data
+                setTimeout(() => {
+                    document.getElementById('serviceProvider').value = 'airtel';
+                    document.getElementById('mobileNumber').value = '9876543210';
+                    document.getElementById('rechargeAmount').value = '299';
+                    transactionFlow.style.display = 'block';
+                    flowAmount.textContent = '299';
+                }, 300);
+            });
+            
+            // Simulate live data updates
+            // setInterval(function() {
+                // Update notification badge randomly
+            //     const badge = document.querySelector('.notification-badge');
+            //     const currentCount = parseInt(badge.textContent);
+            //     const newCount = Math.max(1, Math.min(10, currentCount + Math.floor(Math.random() * 3) - 1));
+            //     badge.textContent = newCount;
+                
+            //     // Update some stats randomly
+            //     const stats = document.querySelectorAll('.stat-card h3');
+            //     stats.forEach(stat => {
+            //         if (Math.random() > 0.7) {
+            //             const current = parseInt(stat.textContent.replace(/[^0-9]/g, ''));
+            //             const change = Math.floor(Math.random() * 50) - 25;
+            //             const newValue = Math.max(0, current + change);
+            //             stat.textContent = stat.textContent.replace(/\d+/, newValue.toLocaleString());
+            //         }
+            //     });
+            // }, 5000);
+            
+            // Add click effect to stat cards
+            document.querySelectorAll('.stat-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 200);
+                });
+            });
+            
+            // Initialize navigation
+            initNavigation();
+        });
+    </script>
+</body>
+</html>
